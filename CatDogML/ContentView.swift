@@ -12,11 +12,15 @@ struct ContentView: View {
     
     var body: some View {
         VStack {
-            Image(uiImage: UIImage(data: model.animal.imageData ?? Data()) ?? UIImage())
-                .resizable()
-                .scaledToFill()
-                .clipped()
-                .edgesIgnoringSafeArea(.all)
+            GeometryReader { geometry in
+                Image(uiImage: UIImage(data: model.animal.imageData ?? Data()) ?? UIImage())
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: geometry.size.width, height: geometry.size.height)
+                    .clipped()
+                    .edgesIgnoringSafeArea(.all)
+            }
+            
             HStack {
                 Text("What is it?")
                     .font(.title)
@@ -30,7 +34,13 @@ struct ContentView: View {
                         .bold()
                 }
                 .padding(.trailing, 10)
-
+            }
+            List(model.animal.results) { result in
+                HStack {
+                    Text(result.imageLabel)
+                    Spacer()
+                    Text(String(format: "%.2f%%", result.confidence * 100))
+                }
             }
         }
         .onAppear(perform: model.getAnimal)
